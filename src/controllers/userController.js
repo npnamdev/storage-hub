@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const _ = require('lodash');
 
 exports.createUser = async (req, res) => {
     try {
@@ -86,7 +87,7 @@ exports.register = async (req, res) => {
         }
 
         const hashedPassword = await userService.hashPassword(req.body.password);
-        const savedUser = await userService.createUser({
+        const user = await userService.createUser({
             fullName: req.body.fullName,
             email: req.body.email,
             password: hashedPassword,
@@ -95,7 +96,9 @@ exports.register = async (req, res) => {
             role: 'user',
         });
 
-        res.status(200).json({ status: 'success', data: savedUser });
+        const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone']);
+
+        res.status(200).json({ status: 'success', data: userData });
     } catch (error) {
         res.status(400).json({ status: 'error', message: error.message });
     }
@@ -104,44 +107,70 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         const user = await userService.checkUserExists(email);
-        if (!user) {
-            throw new Error('Invalid email or password');
-        }
-
+        if (!user) throw { status: 401, message: 'Invalid email or password' };
         const isPasswordValid = await userService.checkPasswordValidity(password, user.password);
-        if (!isPasswordValid) {
-            throw new Error('Invalid email or password');
-        }
-
-        const accessToken = userService.generateAccessToken(user._id);
-        const refreshToken = userService.generateRefreshToken(user._id);
-
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
-
-        await userService.saveRefreshTokenToUser(user._id, refreshToken);
-
-        res.status(200).json({ status: 'success', data: { accessToken, user }, message: 'Login successful' });
+        if (!isPasswordValid) throw { status: 401, message: 'Invalid email or password' };
+        const access_token = userService.generateAccessToken(user._id);
+        const refresh_token = userService.generateRefreshToken(user._id);
+        res.cookie('refresh_token', refresh_token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
+        res.status(200).json({
+            status: 'success',
+            data: { access_token, user: userData },
+            message: 'Login successful'
+        });
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(error.status || 500).json({ status: 'error', message: error.message });
     }
 };
 
 exports.logout = async (req, res) => {
     try {
-        const refreshToken = req.cookies.refreshToken;
+        // Đoạn này làm sau, phải truyền access_token lên để xóa
+        const accessToken = req.user?.access_token; // Giả sử lấy access_token từ req.user
+        if (!accessToken) throw { status: 400, message: 'No access_token found in the request' };
+        // =======================
 
-        if (!refreshToken) {
-            throw new Error('No refreshToken found');
-        }
-
-        res.clearCookie('refreshToken');
-
-        await userService.removeRefreshToken(refreshToken);
-
+        res.clearCookie('refresh_token');
         res.status(200).json({ status: 'success', message: 'Logout successful' });
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(error.status || 500).json({ status: 'error', message: error.message });
+    }
+};
+
+exports.refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refresh_token;
+        if (!refreshToken) throw { status: 403, message: 'Refresh token not provided' };
+        const user = await userService.verifyRefreshToken(refreshToken);
+        if (!user) throw { status: 401, message: 'Invalid refresh token' };
+        const newAccessToken = userService.generateAccessToken(user._id);
+        const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
+        res.status(200).json({
+            status: 'success',
+            data: { access_token: newAccessToken, user: userData },
+            message: 'Token refreshed successfully'
+        });
+    } catch (error) {
+        res.status(error.status || 500).json({ status: 'error', message: error.message });
+    }
+};
+
+exports.fetchAccount = async (req, res) => {
+    try {
+        // Làm sau
+        // Giả định: Thông tin người dùng đã được giải mã từ token và lưu trong req.user
+        const user = req.user;
+        if (!user) throw { status: 401, message: 'Unauthorized' };
+        const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user: userData
+            }
+        });
+    } catch (error) {
+        res.status(error.status || 500).json({ status: 'error', message: error.message });
     }
 };

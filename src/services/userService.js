@@ -29,6 +29,15 @@ exports.generateRefreshToken = (userId) => {
     return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
 };
 
+exports.verifyRefreshToken = async (refreshToken) => {
+    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    if (decodedToken && decodedToken.userId) {
+        const user = await User.findById(decodedToken.userId);
+        return user;
+    }
+}
+
 // ================================================
 
 exports.createUser = async (data) => {
@@ -110,34 +119,6 @@ exports.deleteUser = async (id) => {
         return deleteUser;
     } catch (error) {
         console.error('Error deleting user:', error);
-        throw error;
-    }
-};
-
-exports.saveRefreshTokenToUser = async (userId, refreshToken) => {
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        user.refreshToken = refreshToken;
-        await user.save();
-
-        return user;
-    } catch (error) {
-        throw error;
-    }
-};
-
-exports.removeRefreshToken = async (refreshToken) => {
-    try {
-        const user = await User.findOneAndUpdate({ refreshToken }, { $unset: { refreshToken: 1 } });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-    } catch (error) {
         throw error;
     }
 };

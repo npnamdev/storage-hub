@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
     profilePicture: { type: String },
     isActive: { type: Boolean, default: true },
     role: { type: String, enum: ['user', 'admin', 'editor', 'moderator'], default: 'user' },
-    refreshToken: { type: String },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
