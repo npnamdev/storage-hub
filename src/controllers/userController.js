@@ -127,11 +127,6 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
     try {
-        // Đoạn này làm sau, phải truyền access_token lên để xóa
-        const accessToken = req.user?.access_token; // Giả sử lấy access_token từ req.user
-        if (!accessToken) throw { status: 400, message: 'No access_token found in the request' };
-        // =======================
-
         res.clearCookie('refresh_token');
         res.status(200).json({ status: 'success', message: 'Logout successful' });
     } catch (error) {
@@ -159,17 +154,10 @@ exports.refreshToken = async (req, res) => {
 
 exports.fetchAccount = async (req, res) => {
     try {
-        // Làm sau
-        // Giả định: Thông tin người dùng đã được giải mã từ token và lưu trong req.user
-        const user = req.user;
+        const user = await userService.getUserById(req.user.userId);
         if (!user) throw { status: 401, message: 'Unauthorized' };
         const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
-        res.status(200).json({
-            status: 'success',
-            data: {
-                user: userData
-            }
-        });
+        res.status(200).json({ status: 'success', data: { user: userData } });
     } catch (error) {
         res.status(error.status || 500).json({ status: 'error', message: error.message });
     }
