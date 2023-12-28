@@ -13,8 +13,8 @@ exports.createUser = async (req, res) => {
         );
         return res.status(200).json({
             status: 'success',
+            message: 'User created successfully',
             data: savedUser,
-            message: 'User created successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -38,10 +38,12 @@ exports.getAllUsers = async (req, res) => {
 
     try {
         const users = await userService.getAllUsers(currentPage, pageSize, filters, sortBy, sortOrder);
+        const usersWithoutPassword = users.map(user => _.pick(user, ['_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'createdAt', 'updatedAt', '__v']));
+
         return res.status(200).json({
             status: 'success',
-            data: users,
-            message: 'Users retrieved successfully'
+            message: 'Users retrieved successfully',
+            data: usersWithoutPassword,
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -54,8 +56,8 @@ exports.getUserById = async (req, res) => {
         const user = await userService.getUserById(req.params.id);
         return res.status(200).json({
             status: 'success',
+            message: 'User retrieved successfully',
             data: user,
-            message: 'User retrieved successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -70,8 +72,8 @@ exports.updateUser = async (req, res) => {
         const updatedUser = await userService.updateUser(req.params.id, updateData);
         return res.status(200).json({
             status: 'success',
+            message: 'User updated successfully',
             data: updatedUser,
-            message: 'User updated successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -84,8 +86,8 @@ exports.deleteUser = async (req, res) => {
         const deleteUser = await userService.deleteUser(req.params.id);
         return res.status(200).json({
             status: 'success',
+            message: 'User deleted successfully',
             data: deleteUser,
-            message: 'User deleted successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -106,8 +108,8 @@ exports.register = async (req, res) => {
         const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone']);
         return res.status(200).json({
             status: 'success',
+            message: 'User registered successfully',
             data: userData,
-            message: 'User registered successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -127,8 +129,8 @@ exports.login = async (req, res) => {
         const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
         return res.status(200).json({
             status: 'success',
+            message: 'Login successful',
             data: { access_token, user: userData },
-            message: 'Login successful'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -156,8 +158,8 @@ exports.refreshToken = async (req, res) => {
         const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
         return res.status(200).json({
             status: 'success',
+            message: 'Token refreshed successfully',
             data: { access_token: newAccessToken, user: userData },
-            message: 'Token refreshed successfully'
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
@@ -169,28 +171,12 @@ exports.fetchAccount = async (req, res) => {
         const user = await userService.getUserById(req.user.userId);
         if (!user) throw { status: 401, message: 'Unauthorized' };
         const userData = _.pick(user, ['_id', 'email', 'fullName', 'profilePicture', 'phone', 'role']);
-        return res.status(200).json({ status: 'success', data: { user: userData } });
+        return res.status(200).json({
+            status: 'success',
+            message: 'User data fetched successfully',
+            data: { user: userData },
+        });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });
     }
 };
-
-// Viết thêm
-
-// API đổi mật khẩu
-// app.put('/api/change-password/:userId', (req, res) => {
-//     const userId = parseInt(req.params.userId, 10);
-//     const { newPassword } = req.body;
-
-//     // Tìm người dùng trong mảng
-//     const user = users.find((u) => u.id === userId);
-
-//     if (!user) {
-//         return res.status(404).json({ error: 'Người dùng không tồn tại' });
-//     }
-
-//     // Đổi mật khẩu
-//     user.password = newPassword;
-
-//     res.json({ message: 'Đổi mật khẩu thành công' });
-// });
