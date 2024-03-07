@@ -6,6 +6,9 @@ const usersRouter = require('./routes/userRouter');
 const cors = require('cors');
 require('dotenv').config();
 
+const userController = require('./controllers/userController');
+userController.createAdminUserIfNotExist();
+
 connectToDatabase();
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));

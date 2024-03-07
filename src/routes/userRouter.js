@@ -6,7 +6,8 @@ const uploadToCloudinary = require('../middlewares/uploadToCloudinary');
 const cloudinary = require('cloudinary').v2;
 
 router.post('/', authenticateUser, userController.createUser);
-router.get('/', authenticateUser, userController.getAllUsers);
+router.get('/',  userController.getAllUsers);
+// router.get('/', authenticateUser, userController.getAllUsers);
 router.get('/:id', authenticateUser, userController.getUserById);
 router.put('/:id', authenticateUser, userController.updateUser);
 router.delete('/:id', userController.deleteUser);

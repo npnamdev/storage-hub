@@ -1,5 +1,21 @@
 const userService = require('../services/userService');
 const _ = require('lodash');
+require('dotenv').config();
+
+
+exports.createAdminUserIfNotExist = async () => {
+    try {
+        const isEmailAlreadyUsed = await userService.isEmailAlreadyInUse(process.env.EMAIL_FAKE);
+        if (!isEmailAlreadyUsed) {
+            await userService.createUser({ 
+                email: process.env.EMAIL_FAKE, password: process.env.PASS_FAKE, role: 'admin' 
+            });
+            console.log('Admin created successfully.');
+        }
+    } catch (error) {
+        console.error('Error creating admin user:', error);
+    }
+};
 
 
 exports.createUser = async (req, res) => {
