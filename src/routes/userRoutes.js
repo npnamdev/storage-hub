@@ -20,6 +20,16 @@ router.get('/auth/refresh', userController.refreshToken);
 router.get('/auth/account', authenticateUser, userController.fetchAccount);
 
 
+// Đăng ký (Register)
+// Đăng nhập (Login)
+// Đăng xuất (Logout)
+// Quên mật khẩu (Forgot Password)
+// Đổi mật khẩu (Change Password
+// Cập nhật thông tin tài khoản (Account Management)
+// Reset Mật khẩu (Reset Password)
+// Xác thực Email (Email Verification)
+
+
 router.post('/upload/cloudinary', uploadToCloudinary, (req, res) => {
     const imageUrl = req.cloudinaryResult.secure_url;
     res.status(200).json({

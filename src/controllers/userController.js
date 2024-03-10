@@ -2,7 +2,9 @@ const userService = require('../services/userService');
 const _ = require('lodash');
 require('dotenv').config();
 
-
+/**
+ * Tạo tài khoản quản trị viên nếu chưa tồn tại
+ */
 exports.createAdminUserIfNotExist = async () => {
     try {
         const isEmailAlreadyUsed = await userService.isEmailAlreadyInUse(process.env.EMAIL_FAKE);
@@ -17,7 +19,12 @@ exports.createAdminUserIfNotExist = async () => {
     }
 };
 
-
+/**
+ * Tạo người dùng mới
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.createUser = async (req, res) => {
     try {
         const { fullName, email, password, phone, profilePicture } = req.body;
@@ -37,7 +44,12 @@ exports.createUser = async (req, res) => {
     }
 };
 
-
+/**
+ * Lấy danh sách tất cả người dùng
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.getAllUsers = async (req, res) => {
     const currentPage = parseInt(req.query.currentPage) || 1;
     const pageSize = parseInt(req.query.pageSize) || 5;
@@ -66,7 +78,12 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-
+/**
+ * Lấy thông tin người dùng theo ID
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.getUserById = async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.id);
@@ -80,7 +97,12 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-
+/**
+ * Cập nhật thông tin người dùng
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.updateUser = async (req, res) => {
     try {
         const { email, password, ...updateData } = req.body;
@@ -96,7 +118,12 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-
+/**
+ * Xóa người dùng
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.deleteUser = async (req, res) => {
     try {
         const deleteUser = await userService.deleteUser(req.params.id);
@@ -110,8 +137,12 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-
-// Auth Controller
+/**
+ * Đăng ký (Tạo tài khoản người dùng)
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.register = async (req, res) => {
     try {
         const { fullName, email, password, phone, profilePicture } = req.body;
@@ -132,6 +163,12 @@ exports.register = async (req, res) => {
     }
 };
 
+/**
+ * Đăng nhập
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -153,6 +190,12 @@ exports.login = async (req, res) => {
     }
 };
 
+/**
+ * Đăng xuất
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.logout = async (req, res) => {
     try {
         return res.clearCookie('refresh_token').status(200).json({
@@ -164,6 +207,12 @@ exports.logout = async (req, res) => {
     }
 };
 
+/**
+ * Làm mới token truy cập
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refresh_token;
@@ -182,6 +231,12 @@ exports.refreshToken = async (req, res) => {
     }
 };
 
+/**
+ * Lấy thông tin tài khoản
+ * @param {object} req - Đối tượng yêu cầu từ client
+ * @param {object} res - Đối tượng phản hồi gửi đến client
+ * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
+ */
 exports.fetchAccount = async (req, res) => {
     try {
         const user = await userService.getUserById(req.user.userId);
