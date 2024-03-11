@@ -10,7 +10,25 @@ exports.createAdminUserIfNotExist = async () => {
         const isEmailAlreadyUsed = await userService.isEmailAlreadyInUse(process.env.EMAIL_FAKE);
         if (!isEmailAlreadyUsed) {
             const hashedPassword = await userService.hashPassword(process.env.PASS_FAKE);
-            await userService.createUser({email: process.env.EMAIL_FAKE, password: hashedPassword});
+            await userService.createUser({
+                fullName: 'Admin',
+                email: process.env.EMAIL_FAKE, 
+                password: hashedPassword, 
+                phone: '0937263752',
+                profilePicture: 'https://cdn.pixabay.com/photo/2018/03/12/12/32/woman-3219507_1280.jpg',
+                isActive: true,
+                role: 'admin',
+                dateOfBirth: new Date("1990-05-15"),
+                gender: "male",
+                address: {
+                    street: "123 Main St", 
+                    city: "Cityville",
+                    state: "Stateville",
+                    country: "Countryland",
+                    zipCode: "12345",
+                    nationality: "Nationality One"
+                }
+            });
             console.log('Admin created successfully.');
         }
     } catch (error) {
@@ -65,7 +83,9 @@ exports.getAllUsers = async (req, res) => {
 
     try {
         const users = await userService.getAllUsers(currentPage, pageSize, filters, sortBy, sortOrder);
-        const usersWithoutPassword = users.map(user => _.pick(user, ['_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'createdAt', 'updatedAt', '__v']));
+        const usersWithoutPassword = users.map(user => _.pick(user, [
+            '_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'dateOfBirth', 'gender','address', 'createdAt', 'updatedAt', '__v'
+        ]));
 
         return res.status(200).json({
             status: 'success',
