@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema({
     },
     dateOfBirth: { type: Date },
     gender: { type: String, enum: ['male', 'female', 'other'] },
+    socialMedia: {
+        website: { type: String },
+        facebook: { type: String },
+        twitter: { type: String },
+        instagram: { type: String },
+        youtobe: { type: String },
+        linkedin: { type: String },
+    }
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

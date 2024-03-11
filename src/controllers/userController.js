@@ -27,6 +27,14 @@ exports.createAdminUserIfNotExist = async () => {
                     country: "Countryland",
                     zipCode: "12345",
                     nationality: "Nationality One"
+                },
+                socialMedia: {
+                    website: "https://www.linkedin.com/",
+                    facebook: "https://www.facebook.com/",
+                    twitter: "https://twitter.com/?lang=vi",
+                    youtobe: "https://www.youtube.com/watch?v=pgOsYD-4sCs",
+                    instagram: "https://www.instagram.com/",
+                    linkedin: "https://www.linkedin.com/",
                 }
             });
             console.log('Admin created successfully.');
@@ -84,7 +92,7 @@ exports.getAllUsers = async (req, res) => {
     try {
         const users = await userService.getAllUsers(currentPage, pageSize, filters, sortBy, sortOrder);
         const usersWithoutPassword = users.map(user => _.pick(user, [
-            '_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'dateOfBirth', 'gender','address', 'createdAt', 'updatedAt', '__v'
+            '_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'dateOfBirth', 'gender','address', 'socialMedia', 'createdAt', 'updatedAt', '__v'
         ]));
 
         return res.status(200).json({
