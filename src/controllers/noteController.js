@@ -1,4 +1,4 @@
-const userService = require('../services/userService');
+const noteService = require('../services/noteService');
 const _ = require('lodash');
 require('dotenv').config();
 
@@ -10,28 +10,31 @@ require('dotenv').config();
  */
 exports.createNote = async (req, res) => {
     try {
-        const { title, content, user, sharedWith, tags, isArchived, isDeleted, category, importance, files, urls, status } = req.body;
-        const newNote = new Note({
-            title,
-            content,
-            user,
-            sharedWith,
-            tags,
-            isArchived,
-            isDeleted,
-            category,
-            importance,
-            files,
-            urls,
-            status
-        });
-
-        const savedNote = await newNote.save();
+        const noteData = req.body;
+        
+        console.log(noteData);
+        console.log(req.files);
+        const savedNote = await noteService.createNote(noteData);
 
         return res.status(200).json({
             status: 'success',
             message: 'Ghi chú đã được tạo thành công',
             data: savedNote,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(error.status || 500).json({ status: 'error', message: error.message });
+    }
+};
+
+
+exports.getAllNotes = async (req, res) => {
+    try {
+        const allNotes = await noteService.getAllNotes();
+        return res.status(200).json({
+            status: 'success',
+            message: 'Danh sách các ghi chú đã được lấy thành công',
+            data: allNotes,
         });
     } catch (error) {
         return res.status(error.status || 500).json({ status: 'error', message: error.message });

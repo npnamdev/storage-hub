@@ -10,7 +10,7 @@ const noteSchema = new mongoose.Schema({
   isDeleted: {type: Boolean, default: false},
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
   importance: { type: Number, default: 0, enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
-  files: [{ type: String }], 
+  files: [{ data: Buffer, contentType: String }],
   urls: [{ type: String }],
   status: { type: String, enum: ['active', 'inactive', 'completed'], default: 'active' } 
 },{ timestamps: true });
