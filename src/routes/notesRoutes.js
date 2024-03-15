@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-
 const noteController = require('../controllers/noteController');
 const authenticateUser = require('../middlewares/authenticateUser');
 
-router.post('/', noteController.createNote);
+router.post('/', authenticateUser, noteController.createNote);
 router.get('/', noteController.getAllNotes);
-// router.get('/:id', noteController.getNoteById);
-// router.patch('/:id', noteController.updateNoteById);
-// router.delete('/:id', noteController.deleteNoteById);
-// router.get('/user/:userId', noteController.getUserNotes);
+router.get('/:id', noteController.getNoteById);
+router.put('/:id', noteController.updateNoteById);
+router.delete('/:id', noteController.deleteNoteById);
+// router.get('/', authenticateUser, noteController.getUserNotes);
+
 // router.get('/category/:categoryId', noteController.getCategoryNotes);
 // router.get('/search', noteController.searchNotes);
 // router.get('/archived', noteController.getArchivedNotes);
