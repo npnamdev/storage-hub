@@ -17,7 +17,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(cookieParser());
-app.use(cors({ origin: '*' }));
+
+
+const allowedOrigins = ['http://localhost:3000'];
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/notes', notesRoutes);
@@ -25,4 +38,3 @@ app.use('/api/v1/notes', notesRoutes);
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening at http://localhost:${process.env.PORT}`);
 });
-
