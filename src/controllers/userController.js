@@ -69,41 +69,19 @@ exports.createUser = async (req, res) => {
     }
 };
 
-/**
- * Lấy danh sách tất cả người dùng
- * @param {object} req - Đối tượng yêu cầu từ client
- * @param {object} res - Đối tượng phản hồi gửi đến client
- * @returns {object} - Đối tượng phản hồi với trạng thái và dữ liệu
- */
 exports.getAllUsers = async (req, res) => {
-    const currentPage = parseInt(req.query.currentPage) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 5;
-    const filters = {
-        email: req.query.email,
-        phone: req.query.phone,
-        role: req.query.role,
-        fullName: req.query.fullName,
-        isActive: req.query.isActive,
-    };
-
-    const sortBy = req.query.sortBy || '';
-    const sortOrder = req.query.sortOrder || 'desc';
-
     try {
-        const users = await userService.getAllUsers(currentPage, pageSize, filters, sortBy, sortOrder);
-        const usersWithoutPassword = users.map(user => _.pick(user, [
-            '_id', 'fullName', 'email', 'phone', 'profilePicture', 'isActive', 'role', 'dateOfBirth', 'gender','address', 'socialMedia', 'createdAt', 'updatedAt', '__v'
-        ]));
-
+        const users = await userService.getAllUsers();
         return res.status(200).json({
             status: 'success',
             message: 'Users retrieved successfully',
-            data: usersWithoutPassword,
+            data: users,
         });
     } catch (error) {
-        return res.status(error.status || 500).json({ status: 'error', message: error.message });
+        return res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 };
+
 
 /**
  * Lấy thông tin người dùng theo ID

@@ -23,22 +23,28 @@ router.get('/account', authenticateUser, authController.fetchAccount);
 
 
 router.post('/upload/cloudinary', uploadToCloudinary, (req, res) => {
-    const imageUrl = req.cloudinaryResult.secure_url;
     res.status(200).json({
         message: 'Image uploaded successfully',
-        imageUrl: imageUrl,
+        imageUrl: req.cloudinaryResult,
     });
 });
 
 router.get('/upload/cloudinary', async (req, res) => {
     try {
-        const result = await cloudinary.api.resources({ type: 'upload' });
-        res.status(200).json({ data: result });
+        const result = await cloudinary.api.resources({
+            type: 'upload',
+            max_results: 1000, // Số lượng tệp tối đa bạn muốn lấy trong một lần yêu cầu
+            next_cursor: null // Không có next_cursor để chỉ định vị trí bắt đầu
+        });
+
+        res.status(200).json({ data: result.resources });
     } catch (error) {
         console.error('Cloudinary Error:', error);
         res.status(500).json({ message: 'Error retrieving images from Cloudinary', error: error });
     }
 });
+
+
 
 
 module.exports = router;

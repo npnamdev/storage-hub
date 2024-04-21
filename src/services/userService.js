@@ -98,44 +98,9 @@ exports.createUser = async (data) => {
  * @param {string} sortOrder - Thứ tự sắp xếp ('asc' hoặc 'desc')
  * @returns {Promise<Array<object>>} - Danh sách người dùng
  */
-exports.getAllUsers = async (currentPage, pageSize, filters, sortBy, sortOrder) => {
+exports.getAllUsers = async () => {
     try {
-        let query = {};
-
-        if (filters.email) {
-            query.email = { $regex: filters.email, $options: 'i' };
-        }
-
-        if (filters.phone) {
-            query.phone = { $regex: filters.phone, $options: 'i' };
-        }
-
-        if (filters.role) {
-            query.role = filters.role;
-        }
-
-        if (filters.fullName) {
-            query.fullName = { $regex: filters.fullName, $options: 'i' };
-        }
-
-        if (filters.isActive) {
-            query.isActive = filters.isActive;
-        } else {
-            query.isActive = true;
-        }
-
-        const sortOptions = {};
-
-        if (sortBy) {
-            sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
-        } else {
-            sortOptions.createdAt = -1;
-        }
-
-        const users = await User.find(query)
-            .sort(sortOptions)
-            .skip((currentPage - 1) * pageSize)
-            .limit(pageSize);
+        const users = await User.find({});
         return users;
     } catch (error) {
         throw error;
