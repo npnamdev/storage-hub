@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const notesRoutes = require('./routes/notesRoutes');
 const vocabularyRoutes = require('./routes/vocabularyRoutes');
 const topicRoutes = require('./routes/topicRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
 
 const cors = require('cors');
 require('dotenv').config();
@@ -28,6 +29,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/notes', notesRoutes);
 app.use('/api/v1/vocabulary', vocabularyRoutes);
 app.use('/api/v1/topic', topicRoutes);
+app.use('/api/v1/transactions', transactionRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening at http://localhost:${process.env.PORT}`);
